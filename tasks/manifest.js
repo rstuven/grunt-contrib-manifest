@@ -10,6 +10,47 @@
 module.exports = function (grunt) {
   "use strict";
 
+  /* Extracted yeoman-generator/lib/actions/file.js  */
+  var fs = require('fs');
+  var path = require('path');
+  var glob = require('glob');
+
+  // Performs a glob search with the provided `pattern` and optional Hash of
+  // `options`. Options can be any option supported by
+  // [glob](https://github.com/isaacs/node-glob#options)
+  //
+  // - pattern  - Glob String pattern to look for
+  // - options  - Hash of options matching glob's option.
+  //
+  // Returns an Array of filenames matching the pattern
+  function expand(pattern, options) {
+    return glob.sync(pattern, options);
+  }
+
+  // Performs a glob search with the provided `pattern` and optional Hash of
+  // `options`, filtering results to only return files (not directories). Options
+  // can be any option supported by
+  // [glob](https://github.com/isaacs/node-glob#options)
+  //
+  // - pattern  - Glob String pattern to look for
+  // - options  - Hash of options matching glob's option.
+  //
+  // Returns an Array of filenames matching the pattern
+  function expandFiles(pattern, options) {
+    var cwd = options.cwd || process.cwd();
+    if (pattern instanceof Array) {
+      var result = [];
+      pattern.forEach(function(x){
+        result = result.concat(expandFiles(x, options));
+      });
+      return result;
+    } else {
+        return expand(pattern, options).filter(function (filepath) {
+          return fs.statSync(path.join(cwd, filepath)).isFile();
+        });
+    }
+  }
+
   grunt.registerMultiTask("manifest", "Generate HTML5 cache manifest", function () {
 
     var helpers = require("grunt-lib-contrib").init(grunt);
@@ -27,8 +68,8 @@ module.exports = function (grunt) {
 
     var verbose = true;
     var done = this.async();
-    var files = grunt.file.expandFiles(this.file.src);
-    var destFile = this.file.dest;
+    var files = expandFiles(this.data.src, {});
+    var destFile = this.data.dest;
     var contents = "CACHE MANIFEST\n";
     var excludeFiles = options.exclude;
     var cacheFiles = options.cache;
@@ -36,7 +77,7 @@ module.exports = function (grunt) {
     grunt.verbose.writeflags(options, "Options");
 
     // "src" is required
-    if (!this.file.src) {
+    if (!this.data.src) {
       grunt.fatal("Need to specify source directory for the files.", 2);
     }
 
@@ -109,3 +150,4 @@ module.exports = function (grunt) {
   });
 
 };
+
