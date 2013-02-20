@@ -40,22 +40,22 @@ module.exports = function(grunt) {
       generate: {
         options: {
           basePath: "test/fixtures/",
-          timestamp: false
+          timestamp: false,
+          src: [
+            "*.js",
+            "*.css",
+            "folder_one/*",
+            "folder_two/*.js",
+            "folder_two/*.css"
+          ]
         },
-        src: [
-          "*.js",
-          "*.css",
-          "folder_one/*",
-          "folder_two/*.js",
-          "folder_two/*.css"
-        ],
         dest: "../../tmp/manifest.appcache"
       }
     },
 
     // Unit tests.
     nodeunit: {
-      tasks: ['test/*_test.js']
+      src: ['test/*_test.js']
     }
   });
 
