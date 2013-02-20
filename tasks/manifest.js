@@ -54,7 +54,7 @@ module.exports = function (grunt) {
   grunt.registerMultiTask("manifest", "Generate HTML5 cache manifest", function () {
 
     var helpers = require("grunt-lib-contrib").init(grunt);
-    var options = helpers.options(this, {verbose: true, timestamp:true});
+    var options = helpers.options(this, {verbose: true, timestamp:true, src:[]});
 
     // If we have a basePath, specify it
     if (this.data.options.basePath) {
@@ -68,18 +68,13 @@ module.exports = function (grunt) {
 
     var verbose = true;
     var done = this.async();
-    var files = expandFiles(this.data.src, {});
+    var files = expandFiles(options.src, {});
     var destFile = this.data.dest;
     var contents = "CACHE MANIFEST\n";
     var excludeFiles = options.exclude;
     var cacheFiles = options.cache;
 
     grunt.verbose.writeflags(options, "Options");
-
-    // "src" is required
-    if (!this.data.src) {
-      grunt.fatal("Need to specify source directory for the files.", 2);
-    }
 
     // Set default destination file
     if (!destFile) {
