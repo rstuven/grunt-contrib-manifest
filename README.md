@@ -88,7 +88,7 @@ manifest: {
   generate: {
     options: {
       basePath: "../",
-      cache: ["js/app.js?rel=3230239039", "css/style?rel=43049"]
+      cache: ["js/app.js?rel=3230239039", "css/style?rel=43049"],
       network: ["http://*", "https://*"],
       fallback: ["/ /offline.html"],
       exclude: ["js/jquery.min.js"],
